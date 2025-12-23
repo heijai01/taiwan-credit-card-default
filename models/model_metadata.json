@@ -1,0 +1,24 @@
+{
+  "saved_at": "2025-12-23T12:55:51",
+  "cat_features": [
+    "SEX",
+    "EDUCATION",
+    "MARRIAGE"
+  ],
+  "num_features": [
+    "LIMIT_BAL",
+    "AGE",
+    "MAX_PAST_DELAY",
+    "BILL_AMT_TOTAL",
+    "TOTAL_PAY_AMT",
+    "UTILISATION",
+    "PAYMENT_TO_BILL_RATIO",
+    "PAY_AMT_STD"
+  ],
+  "auc": {
+    "logistic": 0.7391164004606547,
+    "smote_logistic": 0.7402231069918785,
+    "random_forest": 0.771534360034623,
+    "xgboost": 0.7728160944538625
+  }
+}
