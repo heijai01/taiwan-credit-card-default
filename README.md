@@ -78,6 +78,7 @@ Categorical variables were one-hot encoded. Numerical variables were standardise
 ## Model Evaluation
 
 Model performance was evaluated using ROC–AUC, which measures a model’s ability to discriminate between defaulters and non-defaulters across classification thresholds and is robust to class imbalance.
+Confusion matrices at different probability thresholds illustrate the trade-off between recall and precision in credit risk decisions. Lower thresholds prioritise identifying defaulters at the cost of higher false positives, while higher thresholds reduce false positives but miss a larger proportion of defaulters. This demonstrates that operational outcomes depend on threshold selection rather than changes in model ranking performance.
 
 A baseline Logistic Regression model was fitted first to establish an interpretable benchmark. L2 regularisation was used as a stable default to reduce variance and handle correlated financial variables (e.g., billing and repayment aggregates). L2 shrinks coefficients smoothly without performing hard feature selection, which keeps the baseline model interpretable while improving generalisation. Because default events are less frequent than non-defaults, class imbalance was explicitly considered. A SMOTE-augmented logistic regression was evaluated as an alternative imbalance-handling strategy, followed by tree-based models to capture non-linearities and interactions.
 
