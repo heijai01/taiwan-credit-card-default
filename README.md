@@ -103,6 +103,8 @@ Tree-based models substantially outperform the linear baseline, suggesting meani
 ## Model Interpretation
 
 Interpretability was addressed at multiple levels to ensure transparency and consistency of insights across modelling approaches.
+Among the evaluated models, XGBoost achieved the highest ROC–AUC and was therefore selected for detailed model interpretation using SHAP.
+
 
 ### Random Forest Feature Importance
 
@@ -112,12 +114,12 @@ Random Forest feature importance highlights which variables were most frequently
 
 Repayment behaviour and delinquency history dominate model decisions. Maximum past delinquency is the most influential feature, followed by repayment-related measures such as total repayment amount, payment-to-bill ratio, utilisation, and payment variability. Demographic variables contribute minimally once behavioural and financial features are included. Due to correlations among financial variables, importance values are interpreted qualitatively rather than as precise rankings.
 
-### XGBoost hyperparameters
+### XGBoost model hyperparameters
 Hyperparameters were chosen to balance capacity and overfitting risk: a moderate tree depth (max_depth=4) limits overly complex interactions; a smaller learning rate (0.05) with more trees (n_estimators=300) improves incremental learning stability; subsample=0.8 and colsample_bytree=0.8 add randomness to reduce overfitting and improve robustness. These settings were treated as sensible defaults rather than heavily tuned, since performance gains plateaued around ROC–AUC ≈ 0.77.
 
 ### SHAP Analysis (XGBoost)
 
-To provide a more detailed global explanation of the best-performing model, SHAP values were used to interpret XGBoost:
+To provide a detailed global explanation of the best-performing model (XGBoost), SHAP values were used:
 
 ![SHAP Summary (XGBoost)](reports/figures/shap.png)
 
