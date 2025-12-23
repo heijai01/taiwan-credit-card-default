@@ -1,2 +1,130 @@
-# taiwan-credit-card-default
-Predicting credit card payment default using logistic regression, Random Forest, and XGBoost with SHAP-based interpretation.
+# Credit Card Default Prediction
+
+## Project Overview
+
+This project develops and compares statistical and machine-learning models to predict credit card payment default, using a real-world dataset of Taiwanese credit card customers. The objective is not only to achieve strong predictive performance, but also to identify and explain the key drivers of default risk through interpretable modelling and model-agnostic explanation techniques.
+
+The workflow follows a structured data science pipeline:
+- data cleaning and validation  
+- exploratory data analysis (EDA)  
+- baseline interpretable modelling  
+- non-linear model comparison  
+- global model interpretation  
+
+Models evaluated include **Logistic Regression**, **Random Forest**, and **XGBoost**, with performance assessed using **ROC–AUC** to account for class imbalance. Model explanations are provided using feature importance and SHAP values, enabling insights into how repayment behaviour, credit utilisation, and delinquency history influence default risk.
+
+---
+
+## Dataset
+
+The dataset is sourced from the UCI Machine Learning Repository and originates from a study of credit card payment default using data from major card-issuing banks in Taiwan (2005). It contains records for 30,000 credit card clients, including demographic characteristics, credit limits, billing amounts, repayment behaviour, and historical repayment status.
+
+### Target Variable
+- **DEFAULT**: binary indicator of whether a customer defaulted on their credit card payment in the following month.
+
+### Feature Overview
+Features are grouped conceptually rather than documented individually:
+- **Demographics**: age, sex, education level, marital status  
+- **Credit exposure**: credit limit and billed amounts  
+- **Repayment behaviour**: repayment amounts, payment-to-bill ratios, and payment variability  
+- **Delinquency history**: monthly repayment status indicators capturing past payment delays  
+
+### Data Considerations
+- Certain repayment status values are undocumented in the original description; these were retained based on empirical behaviour and consistency with non-delinquent states.
+- Negative billing amounts were preserved, as they represent refunds or credit adjustments.
+- No observations were removed during cleaning to avoid altering the underlying class distribution.
+- Feature engineering was applied to summarise temporal repayment behaviour (e.g. maximum past delinquency and payment volatility).
+
+---
+
+## Methodology
+
+The project follows a structured and reproducible workflow, with each stage implemented in a dedicated notebook.
+
+### Data Cleaning and Validation
+Raw data were inspected for inconsistencies, undocumented categorical values, and invalid entries. All observations were retained to avoid distorting the original class distribution. Undocumented repayment status values were examined empirically and kept where their behaviour was consistent with non-delinquent states. Negative billing amounts were preserved, as they reflect refunds or credit adjustments rather than data errors.
+
+### Exploratory Data Analysis (EDA)
+EDA focused on understanding how historical repayment behaviour, financial exposure, and demographics relate to default risk. Distributional analysis revealed strong skewness in billing and repayment amounts, motivating the use of robust evaluation metrics rather than assumptions of normality.
+
+Analyses showed a clear monotonic relationship between past repayment delinquency and default probability, confirming delinquency history as the strongest individual risk signal. Repayment amounts and utilisation ratios exhibited non-linear relationships with default, indicating that both insufficient repayment and unstable repayment behaviour are associated with higher risk. Demographic variables displayed weaker and non-monotonic relationships with default when compared to behavioural features.
+
+These findings motivated a modelling strategy that prioritises behavioural and financial variables over purely demographic characteristics and supports the use of non-linear models alongside linear baselines.
+
+### Feature Engineering
+Feature engineering was guided directly by EDA findings and domain considerations. Rather than modelling raw monthly variables independently, temporal repayment information was summarised to produce more compact and interpretable behavioural indicators.
+
+Key engineered features include:
+- **Maximum past delinquency**: captures the worst observed repayment delay and reflects severe historical payment stress.
+- **Total repayment amount**: summarises overall repayment effort across billing cycles.
+- **Payment-to-bill ratio**: normalises repayment amounts by outstanding balances to reflect repayment discipline.
+- **Payment variability**: measured as the standard deviation of repayment amounts, capturing instability in repayment behaviour.
+- **Credit utilisation**: expresses outstanding balance relative to credit limit, providing a scale-invariant measure of credit exposure.
+
+Automated feature selection methods such as RFECV were deliberately not applied. Instead, features were retained based on empirical evidence from EDA, domain relevance, and consistency across models. This prioritises interpretability and robustness over marginal performance gains and avoids instability caused by correlated financial variables.
+
+### Modelling Strategy
+Three modelling approaches were evaluated:
+- **Logistic Regression** as an interpretable baseline  
+- **Random Forest** to capture non-linear relationships and feature interactions  
+- **XGBoost** as a gradient-boosted tree model for comparison  
+
+Categorical variables were one-hot encoded, and numerical variables were passed through without unnecessary scaling for tree-based models. Class imbalance was addressed through evaluation metrics rather than aggressive resampling.
+
+---
+
+## Model Evaluation
+
+Model performance was evaluated using ROC–AUC, which measures a model’s ability to discriminate between defaulters and non-defaulters across classification thresholds and is robust to class imbalance.
+
+A baseline Logistic Regression model was fitted first to establish an interpretable benchmark. Because default events are less frequent than non-defaults, class imbalance was explicitly considered. A SMOTE-augmented logistic regression was evaluated as an alternative imbalance-handling strategy, followed by tree-based models to capture non-linearities and interactions.
+
+### Class Imbalance: SMOTE vs Baseline
+
+SMOTE was tested to assess whether synthetic oversampling improves discrimination for the logistic regression baseline. Performance differences were negligible, indicating that oversampling does not materially improve ranking performance in this setting.
+
+![ROC Curve (Logistic vs SMOTE)](reports/figures/roc_curve.png)
+
+### Performance Comparison (Test ROC–AUC)
+
+| Model | ROC–AUC |
+|------|---------|
+| Logistic Regression | 0.739 |
+| Logistic Regression + SMOTE | 0.740 |
+| Random Forest | 0.771 |
+| XGBoost | 0.773 |
+
+Tree-based models substantially outperform the linear baseline, suggesting meaningful non-linear effects and interactions in default risk. The marginal improvement of XGBoost over Random Forest implies that most predictive structure is already captured by tree-based models, and that further gains are limited by the information content of the dataset rather than model complexity.
+
+---
+
+## Model Interpretation
+
+Interpretability was addressed at multiple levels to ensure transparency and consistency of insights across modelling approaches.
+
+### Random Forest Feature Importance
+
+Random Forest feature importance highlights which variables were most frequently used by the model to split the data:
+
+![Random Forest Feature Importance](reports/figures/rf_feature_importance.png)
+
+Repayment behaviour and delinquency history dominate model decisions. Maximum past delinquency is the most influential feature, followed by repayment-related measures such as total repayment amount, payment-to-bill ratio, utilisation, and payment variability. Demographic variables contribute minimally once behavioural and financial features are included. Due to correlations among financial variables, importance values are interpreted qualitatively rather than as precise rankings.
+
+### SHAP Analysis (XGBoost)
+
+To provide a more detailed global explanation of the best-performing model, SHAP values were used to interpret XGBoost:
+
+![SHAP Summary (XGBoost)](reports/figures/shap.png)
+
+The SHAP summary plot confirms that default risk is primarily driven by repayment behaviour and delinquency severity. Higher past delinquency, unstable repayment patterns, higher utilisation, and lower repayment effort increase predicted default risk, while higher repayment ratios and larger credit limits reduce risk. Demographic variables show limited impact once behavioural factors are accounted for.
+
+Across methods (logistic coefficients, Random Forest importance, and SHAP), conclusions are consistent: **behavioural credit signals dominate default risk**, while demographic attributes play a secondary role.
+
+---
+
+## How to Run
+
+1. Clone the repository
+```bash
+git clone https://github.com/your-username/credit-card-default-prediction.git
+cd credit-card-default-prediction
