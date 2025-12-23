@@ -79,7 +79,7 @@ Categorical variables were one-hot encoded, and numerical variables were passed 
 
 Model performance was evaluated using ROC–AUC, which measures a model’s ability to discriminate between defaulters and non-defaulters across classification thresholds and is robust to class imbalance.
 
-A baseline Logistic Regression model was fitted first to establish an interpretable benchmark. Because default events are less frequent than non-defaults, class imbalance was explicitly considered. A SMOTE-augmented logistic regression was evaluated as an alternative imbalance-handling strategy, followed by tree-based models to capture non-linearities and interactions.
+A baseline Logistic Regression model was fitted first to establish an interpretable benchmark. L2 regularisation was used as a stable default to reduce variance and handle correlated financial variables (e.g., billing and repayment aggregates). L2 shrinks coefficients smoothly without performing hard feature selection, which keeps the baseline model interpretable while improving generalisation. Because default events are less frequent than non-defaults, class imbalance was explicitly considered. A SMOTE-augmented logistic regression was evaluated as an alternative imbalance-handling strategy, followed by tree-based models to capture non-linearities and interactions.
 
 ### Class Imbalance: SMOTE vs Baseline
 
@@ -111,6 +111,9 @@ Random Forest feature importance highlights which variables were most frequently
 ![Random Forest Feature Importance](reports/figures/rf_feature_importance.png)
 
 Repayment behaviour and delinquency history dominate model decisions. Maximum past delinquency is the most influential feature, followed by repayment-related measures such as total repayment amount, payment-to-bill ratio, utilisation, and payment variability. Demographic variables contribute minimally once behavioural and financial features are included. Due to correlations among financial variables, importance values are interpreted qualitatively rather than as precise rankings.
+
+### XGBoost hyperparameters
+Hyperparameters were chosen to balance capacity and overfitting risk: a moderate tree depth (max_depth=4) limits overly complex interactions; a smaller learning rate (0.05) with more trees (n_estimators=300) improves incremental learning stability; subsample=0.8 and colsample_bytree=0.8 add randomness to reduce overfitting and improve robustness. These settings were treated as sensible defaults rather than heavily tuned, since performance gains plateaued around ROC–AUC ≈ 0.77.
 
 ### SHAP Analysis (XGBoost)
 
