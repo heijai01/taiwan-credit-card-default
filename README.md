@@ -46,9 +46,13 @@ The project follows a structured and reproducible workflow, with each stage impl
 ### Data Cleaning and Validation
 
 Raw data were inspected for structural inconsistencies, undocumented categorical values, and potential data-quality issues that could bias downstream analysis. 
-Undocumented repayment status values were examined empirically and kept where their behaviour was consistent with non-delinquent states (near-zero balances and low default probability). 
+
+Undocumented repayment status values were examined empirically and kept where their behaviour was consistent with non-delinquent states (near-zero balances and low default probability).
+
 The EDUCATION variable includes undocumented categorical levels (0, 5, and 6) that are not defined in the original documentation. These levels were grouped into an “Other” category to maintain interpretability and avoid introducing arbitrary assumptions
+
 Negative billing amounts were preserved, as they reflect refunds or credit adjustments rather than data errors.
+
 All observations were retained to avoid distorting the original class distribution.
 
 ### Exploratory Data Analysis (EDA)
@@ -67,40 +71,36 @@ Demographic variables such as age, sex, education, and marital status show compa
 Overall, EDA results indicate that recent delinquency, repayment stability, and credit exposure are the primary drivers of short-term default risk. These findings directly motivated the subsequent feature engineering and modelling strategy.
 
 
-
-
 ### Feature Engineering
 
-Feature engineering was guided directly by EDA findings and domain considerations. Rather than modelling raw monthly variables independently, temporal repayment information was summarised to produce more compact and interpretable behavioural indicators.
-
-Key engineered features include:
-### Feature Engineering
-
-Feature engineering was guided directly by EDA findings and credit-risk intuition. The EDA showed that (i) repayment delinquency is the strongest driver of default risk, especially the most recent status (PAY_0), (ii) repayment and billing amounts are highly right-skewed and noisy month-to-month, and (iii) many monthly variables are strongly correlated across time (e.g., PAY_0–PAY_6 and BILL_AMT1–BILL_AMT6). To reduce redundancy while preserving signal, raw monthly histories were summarised into compact behavioural indicators.
+Feature engineering was guided by EDA findings and credit-risk domain considerations.
+The EDA showed that raw monthly billing, repayment, and delinquency variables are highly correlated across time and noisy at the individual-month level. 
+To preserve signal while reducing redundancy and multicollinearity, temporal information was summarised into compact behavioural indicators
 
 Key engineered features include:
 
 - **MAX_PAST_DELAY** (severity of delinquency):  
-  The maximum value across PAY_0–PAY_6 captures the worst observed repayment delay. This aligns with EDA showing a steep increase in default rate as delinquency worsens, and provides a single interpretable measure of delinquency severity.
+  The maximum value across PAY_0–PAY_6 captures the worst observed repayment delay, identified in EDA as the strongest default risk signal
 
 - **BILL_AMT_TOTAL** (overall exposure / utilisation proxy):  
-  Total billed amount across BILL_AMT1–BILL_AMT6 summarises overall outstanding balance level across months. Negative bill amounts were retained, as they represent refunds/credit adjustments rather than data errors.
+  represents overall outstanding exposure; negative values were retained as they reflect refunds or credit adjustments.
 
 - **TOTAL_PAY_AMT** (repayment effort):  
-  Total repayment across PAY_AMT1–PAY_AMT6 reflects the customer’s overall repayment behaviour. EDA indicated that higher repayment effort is associated with lower default risk, but with non-linear effects.
+  summarises overall repayment effort across billing cycles; higher repayment effort is generally associated with lower default risk
 
 - **PAYMENT_TO_BILL_RATIO** (repayment discipline):  
-  A normalised repayment measure computed relative to total billing (with safeguards for zero/near-zero denominators). This captures “ability/willingness to pay” on a comparable scale across customers, complementing raw totals.
+  normalises repayment relative to exposure (total billing), capturing repayment discipline on a comparable scale across customers.
 
 - **UTILISATION** (credit pressure):  
-  Credit utilisation was computed as billed balance relative to credit limit (BILL_AMT_TOTAL / LIMIT_BAL). EDA showed higher utilisation is associated with increased default risk, and this feature makes exposure comparable across different credit limits.
+  measures credit pressure as billed balance relative to credit limit; higher utilisation is associated with increased default risk
 
 - **PAY_AMT_STD** (repayment stability):  
-  The standard deviation of monthly repayment amounts captures volatility/irregularity in payment behaviour. EDA suggested that not only low repayment, but also unstable repayment patterns, are associated with higher risk—this feature operationalises that stability signal.
+  The standard deviation of monthly repayment amounts captures instability in repayment behaviour, reflecting EDA findings that irregular payments are linked to elevated risk.
 
 
-Automated feature selection methods such as RFECV were not applied. Many financial variables are correlated by construction, and aggressive selection can be unstable across splits while reducing interpretability. Instead, engineered features were chosen to (i) reflect the strongest EDA signals (delinquency severity/recency, utilisation, repayment effort and stability), (ii) reduce multicollinearity from monthly sequences, and (iii) remain interpretable for risk explanation (feature importance / SHAP).
+Automated feature selection (e.g. RFECV) was not applied, as financial variables are correlated by construction and aggressive selection can reduce stability and interpretability. Features were instead retained based on EDA evidence, domain relevance, and consistency across models.
 
+--- 
 ### Modelling Strategy
 
 Three modelling approaches were evaluated:
