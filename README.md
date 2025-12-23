@@ -43,14 +43,22 @@ Features are grouped conceptually rather than documented individually:
 The project follows a structured and reproducible workflow, with each stage implemented in a dedicated notebook.
 
 ### Data Cleaning and Validation
-Raw data were inspected for inconsistencies, undocumented categorical values, and invalid entries. All observations were retained to avoid distorting the original class distribution. Undocumented repayment status values were examined empirically and kept where their behaviour was consistent with non-delinquent states. Negative billing amounts were preserved, as they reflect refunds or credit adjustments rather than data errors.
-
+Raw data were inspected for structural inconsistencies, undocumented categorical values, and potential data-quality issues that could bias downstream analysis. 
+Undocumented repayment status values were examined empirically and kept where their behaviour was consistent with non-delinquent states (near-zero balances and low default probability). 
+The EDUCATION variable includes undocumented categorical levels (0, 5, and 6) that are not defined in the original documentation. These levels were grouped into an “Other” category to maintain interpretability and avoid introducing arbitrary assumptions
+Negative billing amounts were preserved, as they reflect refunds or credit adjustments rather than data errors.
+All observations were retained to avoid distorting the original class distribution.
 ### Exploratory Data Analysis (EDA)
-EDA focused on understanding how historical repayment behaviour, financial exposure, and demographics relate to default risk. Distributional analysis revealed strong skewness in billing and repayment amounts, motivating the use of robust evaluation metrics rather than assumptions of normality.
+EDA focused on understanding how historical repayment behaviour, financial exposure, and demographics relate to default risk. Distributional analysis revealed strong right skewness in billing and repayment amounts. On top of that, a histogram of the target variable shows a clear class imbalance, with approximately 77% non-defaults and 23% defaults, motivating the use of robust evaluation metrics such as ROC-AUC rather than assumptions of normality.
 
-Analyses showed a clear monotonic relationship between past repayment delinquency and default probability, confirming delinquency history as the strongest individual risk signal. Repayment amounts and utilisation ratios exhibited non-linear relationships with default, indicating that both insufficient repayment and unstable repayment behaviour are associated with higher risk. Demographic variables displayed weaker and non-monotonic relationships with default when compared to behavioural features.
+Analyses showed a clear monotonic relationship between past repayment delinquency and default probability, confirming delinquency history as the strongest individual risk signal.
+In contrast, repayment amounts and utilisation ratios exhibited non-linear relationships with default, indicating that both insufficient repayment and unstable repayment behaviour are associated with higher risk.
+
+Demographic variables such as age, sex, education, and martial status displayed weaker and non-monotonic relationships with default when compared to behavioural features.
 
 These findings motivated a modelling strategy that prioritises behavioural and financial variables over purely demographic characteristics and supports the use of non-linear models alongside linear baselines.
+
+
 
 ### Feature Engineering
 Feature engineering was guided directly by EDA findings and domain considerations. Rather than modelling raw monthly variables independently, temporal repayment information was summarised to produce more compact and interpretable behavioural indicators.
