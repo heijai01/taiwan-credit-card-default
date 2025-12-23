@@ -56,7 +56,7 @@ All observations were retained to avoid distorting the original class distributi
 Exploratory analysis focused on identifying which aspects of customer behaviour and financial exposure are most strongly associated with payment default.
 
 Recent repayment status (PAY_0) exhibits the strongest relationship with default probability. Default rates increase sharply as repayment status deteriorates, indicating that even short-term delinquency is a powerful signal of near-term default risk. Older repayment status variables (PAY_2 to PAY_6) show similar but progressively weaker patterns, suggesting that recency of delinquency is more informative than historical delinquency alone.
-![Default rate by recent repayment status](reports/figures/default_PAY_0.png
+![Default rate by recent repayment status](reports/figures/default_PAY_0.png)
 
 Credit limit shows a clear inverse relationship with default: customers with lower credit limits experience substantially higher default rates, while default probability decreases monotonically as credit limits increase. This supports the interpretation that credit limit captures underlying financial capacity and risk tolerance assessed by the issuing bank.
 
@@ -74,13 +74,32 @@ Overall, EDA results indicate that recent delinquency, repayment stability, and 
 Feature engineering was guided directly by EDA findings and domain considerations. Rather than modelling raw monthly variables independently, temporal repayment information was summarised to produce more compact and interpretable behavioural indicators.
 
 Key engineered features include:
-- **Maximum past delinquency**: captures the worst observed repayment delay and reflects severe historical payment stress.
-- **Total repayment amount**: summarises overall repayment effort across billing cycles.
-- **Payment-to-bill ratio**: normalises repayment amounts by outstanding balances to reflect repayment discipline.
-- **Payment variability**: measured as the standard deviation of repayment amounts, capturing instability in repayment behaviour.
-- **Credit utilisation**: expresses outstanding balance relative to credit limit, providing a scale-invariant measure of credit exposure.
+### Feature Engineering
 
-Automated feature selection methods such as RFECV were deliberately not applied. Instead, features were retained based on empirical evidence from EDA, domain relevance, and consistency across models. This prioritises interpretability and robustness over marginal performance gains and avoids instability caused by correlated financial variables.
+Feature engineering was guided directly by EDA findings and credit-risk intuition. The EDA showed that (i) repayment delinquency is the strongest driver of default risk, especially the most recent status (PAY_0), (ii) repayment and billing amounts are highly right-skewed and noisy month-to-month, and (iii) many monthly variables are strongly correlated across time (e.g., PAY_0–PAY_6 and BILL_AMT1–BILL_AMT6). To reduce redundancy while preserving signal, raw monthly histories were summarised into compact behavioural indicators.
+
+Key engineered features include:
+
+- **MAX_PAST_DELAY** (severity of delinquency):  
+  The maximum value across PAY_0–PAY_6 captures the worst observed repayment delay. This aligns with EDA showing a steep increase in default rate as delinquency worsens, and provides a single interpretable measure of delinquency severity.
+
+- **BILL_AMT_TOTAL** (overall exposure / utilisation proxy):  
+  Total billed amount across BILL_AMT1–BILL_AMT6 summarises overall outstanding balance level across months. Negative bill amounts were retained, as they represent refunds/credit adjustments rather than data errors.
+
+- **TOTAL_PAY_AMT** (repayment effort):  
+  Total repayment across PAY_AMT1–PAY_AMT6 reflects the customer’s overall repayment behaviour. EDA indicated that higher repayment effort is associated with lower default risk, but with non-linear effects.
+
+- **PAYMENT_TO_BILL_RATIO** (repayment discipline):  
+  A normalised repayment measure computed relative to total billing (with safeguards for zero/near-zero denominators). This captures “ability/willingness to pay” on a comparable scale across customers, complementing raw totals.
+
+- **UTILISATION** (credit pressure):  
+  Credit utilisation was computed as billed balance relative to credit limit (BILL_AMT_TOTAL / LIMIT_BAL). EDA showed higher utilisation is associated with increased default risk, and this feature makes exposure comparable across different credit limits.
+
+- **PAY_AMT_STD** (repayment stability):  
+  The standard deviation of monthly repayment amounts captures volatility/irregularity in payment behaviour. EDA suggested that not only low repayment, but also unstable repayment patterns, are associated with higher risk—this feature operationalises that stability signal.
+
+
+Automated feature selection methods such as RFECV were not applied. Many financial variables are correlated by construction, and aggressive selection can be unstable across splits while reducing interpretability. Instead, engineered features were chosen to (i) reflect the strongest EDA signals (delinquency severity/recency, utilisation, repayment effort and stability), (ii) reduce multicollinearity from monthly sequences, and (iii) remain interpretable for risk explanation (feature importance / SHAP).
 
 ### Modelling Strategy
 
@@ -135,7 +154,8 @@ Random Forest feature importance highlights which variables were most frequently
 Repayment behaviour and delinquency history dominate model decisions. Maximum past delinquency is the most influential feature, followed by repayment-related measures such as total repayment amount, payment-to-bill ratio, utilisation, and payment variability. Demographic variables contribute minimally once behavioural and financial features are included. Due to correlations among financial variables, importance values are interpreted qualitatively rather than as precise rankings.
 
 ### XGBoost model hyperparameters
-Hyperparameters were chosen to balance capacity and overfitting risk: a moderate tree depth (max_depth=4) limits overly complex interactions; a smaller learning rate (0.05) with more trees (n_estimators=300) improves incremental learning stability; subsample=0.8 and colsample_bytree=0.8 add randomness to reduce overfitting and improve robustness. These settings were treated as sensible defaults rather than heavily tuned, since performance gains plateaued around ROC–AUC ≈ 0.77.
+
+Hyperparameters were chosen to balance capacity and overfitting risk: a moderate tree depth (max_depth=4) limits overly complex interactions; a smaller learning rate (0.05) with more trees (n_estimators=300) improves incremental learning stability; subsample=0.8 and colsample_bytree=0.8 add randomness to reduce overfitting and improve robustness. 
 
 ### SHAP Analysis (XGBoost)
 
