@@ -75,7 +75,7 @@ Categorical variables were one-hot encoded. Numerical variables were standardise
 
 ---
 
-## Model Evaluation
+## Model Evaluation and Interpretation
 
 Model performance was evaluated using ROC–AUC, which measures a model’s ability to discriminate between defaulters and non-defaulters across classification thresholds and is robust to class imbalance.
 
@@ -102,8 +102,6 @@ SMOTE was tested to assess whether synthetic oversampling improves discriminatio
 Tree-based models substantially outperform the linear baseline, suggesting meaningful non-linear effects and interactions in default risk. The marginal improvement of XGBoost over Random Forest implies that most predictive structure is already captured by tree-based models, and that further gains are limited by the information content of the dataset rather than model complexity.
 
 ---
-
-## Model Interpretation
 
 Interpretability was addressed at multiple levels to ensure transparency and consistency of insights across modelling approaches.
 Among the evaluated models, XGBoost achieved the highest ROC–AUC and was therefore selected for detailed model interpretation using SHAP.
