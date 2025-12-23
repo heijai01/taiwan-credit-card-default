@@ -70,7 +70,7 @@ Three modelling approaches were evaluated:
 - **Random Forest** to capture non-linear relationships and feature interactions  
 - **XGBoost** as a gradient-boosted tree model for comparison  
 
-Categorical variables were one-hot encoded, and numerical variables were passed through without standardisation, as tree-based models are scale-invariant. Class imbalance was addressed through evaluation metrics rather than aggressive resampling.
+Categorical variables were one-hot encoded. Numerical variables were standardised for logistic regression to ensure stable optimisation and comparable coefficients, while tree-based models were trained on unscaled features, as they are scale-invariant. Class imbalance was addressed through evaluation metrics rather than aggressive resampling.
 
 
 ---
