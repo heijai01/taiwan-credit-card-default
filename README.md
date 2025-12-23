@@ -2,7 +2,8 @@
 
 ## Project Overview
 
-This project develops and compares statistical and machine-learning models to predict credit card payment default, using a real-world dataset of Taiwanese credit card customers. The objective is not only to achieve strong predictive performance, but also to identify and explain the key drivers of default risk through interpretable modelling and model-agnostic explanation techniques.
+This project develops and compares statistical and machine-learning models to predict credit card payment default, using a real-world dataset of Taiwanese credit card customers. The objective is not only to achieve strong predictive performance, but also to identify and explain the key drivers of default risk through interpretable modelling and model-agnostic explanation techniques. This task is central to retail credit risk management, where accurately identifying high-risk customers enables better pricing, monitoring, and loss mitigation decisions.
+
 
 The workflow follows a structured data science pipeline:
 - data cleaning and validation  
@@ -69,7 +70,8 @@ Three modelling approaches were evaluated:
 - **Random Forest** to capture non-linear relationships and feature interactions  
 - **XGBoost** as a gradient-boosted tree model for comparison  
 
-Categorical variables were one-hot encoded, and numerical variables were passed through without unnecessary scaling for tree-based models. Class imbalance was addressed through evaluation metrics rather than aggressive resampling.
+Categorical variables were one-hot encoded, and numerical variables were passed through without standardisation, as tree-based models are scale-invariant. Class imbalance was addressed through evaluation metrics rather than aggressive resampling.
+
 
 ---
 
@@ -118,7 +120,13 @@ To provide a more detailed global explanation of the best-performing model, SHAP
 
 The SHAP summary plot confirms that default risk is primarily driven by repayment behaviour and delinquency severity. Higher past delinquency, unstable repayment patterns, higher utilisation, and lower repayment effort increase predicted default risk, while higher repayment ratios and larger credit limits reduce risk. Demographic variables show limited impact once behavioural factors are accounted for.
 
-Across methods (logistic coefficients, Random Forest importance, and SHAP), conclusions are consistent: **behavioural credit signals dominate default risk**, while demographic attributes play a secondary role.
+Across models (logistic regression, Random Forest, and SHAP), results are consistent: behavioural repayment signals dominate default risk and are substantially more informative than demographic attributes for short-term credit risk assessment.
+
+---
+
+## Limitations
+
+Model performance plateaus at approximately ROC–AUC ≈ 0.77 across tree-based methods, suggesting that predictive power is constrained by the information content of the available features rather than model complexity. As a result, outputs should be interpreted as relative risk estimates rather than precise default probabilities.
 
 ---
 
