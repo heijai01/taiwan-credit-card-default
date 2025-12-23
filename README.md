@@ -56,6 +56,7 @@ All observations were retained to avoid distorting the original class distributi
 Exploratory analysis focused on identifying which aspects of customer behaviour and financial exposure are most strongly associated with payment default.
 
 Recent repayment status (PAY_0) exhibits the strongest relationship with default probability. Default rates increase sharply as repayment status deteriorates, indicating that even short-term delinquency is a powerful signal of near-term default risk. Older repayment status variables (PAY_2 to PAY_6) show similar but progressively weaker patterns, suggesting that recency of delinquency is more informative than historical delinquency alone.
+![Default rate by recent repayment status](reports/figures/default_PAY_0.png
 
 Credit limit shows a clear inverse relationship with default: customers with lower credit limits experience substantially higher default rates, while default probability decreases monotonically as credit limits increase. This supports the interpretation that credit limit captures underlying financial capacity and risk tolerance assessed by the issuing bank.
 
