@@ -123,7 +123,7 @@ To provide a more detailed global explanation of the best-performing model, SHAP
 
 The SHAP summary plot confirms that default risk is primarily driven by repayment behaviour and delinquency severity. Higher past delinquency, unstable repayment patterns, higher utilisation, and lower repayment effort increase predicted default risk, while higher repayment ratios and larger credit limits reduce risk. Demographic variables show limited impact once behavioural factors are accounted for.
 
-Across models (logistic regression, Random Forest, and SHAP), results are consistent: behavioural repayment signals dominate default risk and are substantially more informative than demographic attributes for short-term credit risk assessment.
+Across models (logistic regression, Random Forest, and XGBoost) and explanation methods (SHAP), results are consistent: behavioural repayment signals dominate default risk and are substantially more informative than demographic attributes for short-term credit risk assessment.
 
 ---
 
