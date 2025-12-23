@@ -59,16 +59,16 @@ All observations were retained to avoid distorting the original class distributi
 
 Exploratory analysis focused on identifying which aspects of customer behaviour and financial exposure are most strongly associated with payment default.
 
-Recent repayment status (PAY_0) exhibits the strongest relationship with default probability. Default rates increase sharply as repayment status deteriorates, indicating that even short-term delinquency is a powerful signal of near-term default risk. Older repayment status variables (PAY_2 to PAY_6) show similar but progressively weaker patterns, suggesting that recency of delinquency is more informative than historical delinquency alone.
+**Recent repayment status** (PAY_0) exhibits the **strongest** relationship with default probability. Default rates increase sharply as repayment status deteriorates, indicating that even short-term delinquency is a powerful signal of near-term default risk. Older repayment status variables (PAY_2 to PAY_6) show similar but progressively weaker patterns, suggesting that recency of delinquency is more informative than historical delinquency alone.
 ![Default rate by recent repayment status](reports/figures/default_PAY_0.png)
 
-Credit limit shows a clear inverse relationship with default: customers with lower credit limits experience substantially higher default rates, while default probability decreases monotonically as credit limits increase. This supports the interpretation that credit limit captures underlying financial capacity and risk tolerance assessed by the issuing bank.
+Credit limit shows a clear **inverse** relationship with default: customers with **lower credit limits** experience substantially **higher default rates**, while default probability decreases monotonically as credit limits increase. This supports the interpretation that credit limit captures underlying financial capacity and risk tolerance assessed by the issuing bank.
 
-Repayment amount variables display a strong but non-linear relationship with default. Customers making very small or highly variable repayments are disproportionately represented among defaulters, while higher and more consistent repayment behaviour is associated with lower risk. Repayment and billing amounts are highly right-skewed, reinforcing that normality assumptions are inappropriate. Also, class imbalance for target variable (DEFAULT) means metrics such as ROC-AUC is preferred.
+Repayment amount variables display a **strong but non-linear** relationship with default. Customers making very small or highly variable repayments are disproportionately represented among defaulters, while higher and more consistent repayment behaviour is associated with lower risk. Repayment and billing amounts are highly **right-skewed**, reinforcing that normality assumptions are inappropriate. Also, class imbalance for target variable (DEFAULT) means metrics such as ROC-AUC is preferred.
 
-Demographic variables such as age, sex, education, and marital status show comparatively weak and non-monotonic relationships with default once behavioural variables are considered. Correlation analysis further confirms that repayment status and behavioural features dominate default risk, while demographic attributes contribute limited incremental information.
+Demographic variables such as age, sex, education, and marital status show comparatively **weak and non-monotonic** relationships with default once behavioural variables are considered. Correlation analysis further confirms that.
 
-Overall, EDA results indicate that recent delinquency, repayment stability, and credit exposure are the primary drivers of short-term default risk. These findings directly motivated the subsequent feature engineering and modelling strategy.
+Overall, EDA results indicate that **recent delinquency**, **repayment stability**, and **credit exposure** are the primary drivers of short-term default risk. These findings directly motivated the subsequent feature engineering and modelling strategy.
 
 
 ### Feature Engineering
