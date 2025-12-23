@@ -122,9 +122,17 @@ Across methods (logistic coefficients, Random Forest importance, and SHAP), conc
 
 ---
 
-## How to Run
+## Repository Structure and Reproducibility
 
-1. Clone the repository
-```bash
-git clone https://github.com/your-username/credit-card-default-prediction.git
-cd credit-card-default-prediction
+Each stage of this project is implemented in a separate notebook, following the logical progression from data preparation to modelling and interpretation.
+
+### Structure
+- `notebooks/`: Jupyter notebooks implementing data cleaning, EDA, modelling, and interpretation  
+- `data/processed/`: cleaned and feature-engineered dataset used for modelling  
+- `models/`: saved model pipelines and metadata  
+- `reports/figures/`: figures used in this README 
+
+### Reproducibility
+All dependencies are listed in `requirements.txt`. After installing the required packages, the analysis can be reproduced by running the notebooks in numerical order, from data cleaning through to model interpretation.
+Saved model pipelines are provided to allow reuse without retraining.
+
