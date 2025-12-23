@@ -31,6 +31,7 @@ Features are grouped conceptually rather than documented individually:
 - **Delinquency history**: monthly repayment status indicators capturing past payment delays  
 
 ### Data Considerations
+
 - Certain repayment status values are undocumented in the original description; these were retained based on empirical behaviour and consistency with non-delinquent states.
 - Negative billing amounts were preserved, as they represent refunds or credit adjustments.
 - No observations were removed during cleaning to avoid altering the underlying class distribution.
@@ -43,24 +44,32 @@ Features are grouped conceptually rather than documented individually:
 The project follows a structured and reproducible workflow, with each stage implemented in a dedicated notebook.
 
 ### Data Cleaning and Validation
+
 Raw data were inspected for structural inconsistencies, undocumented categorical values, and potential data-quality issues that could bias downstream analysis. 
 Undocumented repayment status values were examined empirically and kept where their behaviour was consistent with non-delinquent states (near-zero balances and low default probability). 
 The EDUCATION variable includes undocumented categorical levels (0, 5, and 6) that are not defined in the original documentation. These levels were grouped into an “Other” category to maintain interpretability and avoid introducing arbitrary assumptions
 Negative billing amounts were preserved, as they reflect refunds or credit adjustments rather than data errors.
 All observations were retained to avoid distorting the original class distribution.
+
 ### Exploratory Data Analysis (EDA)
-EDA focused on understanding how historical repayment behaviour, financial exposure, and demographics relate to default risk. Distributional analysis revealed strong right skewness in billing and repayment amounts. On top of that, a histogram of the target variable shows a clear class imbalance, with approximately 77% non-defaults and 23% defaults, motivating the use of robust evaluation metrics such as ROC-AUC rather than assumptions of normality.
 
-Analyses showed a clear monotonic relationship between past repayment delinquency and default probability, confirming delinquency history as the strongest individual risk signal.
-In contrast, repayment amounts and utilisation ratios exhibited non-linear relationships with default, indicating that both insufficient repayment and unstable repayment behaviour are associated with higher risk.
+Exploratory analysis focused on identifying which aspects of customer behaviour and financial exposure are most strongly associated with payment default.
 
-Demographic variables such as age, sex, education, and martial status displayed weaker and non-monotonic relationships with default when compared to behavioural features.
+Recent repayment status (PAY_0) exhibits the strongest relationship with default probability. Default rates increase sharply as repayment status deteriorates, indicating that even short-term delinquency is a powerful signal of near-term default risk. Older repayment status variables (PAY_2 to PAY_6) show similar but progressively weaker patterns, suggesting that recency of delinquency is more informative than historical delinquency alone.
 
-These findings motivated a modelling strategy that prioritises behavioural and financial variables over purely demographic characteristics and supports the use of non-linear models alongside linear baselines.
+Credit limit shows a clear inverse relationship with default: customers with lower credit limits experience substantially higher default rates, while default probability decreases monotonically as credit limits increase. This supports the interpretation that credit limit captures underlying financial capacity and risk tolerance assessed by the issuing bank.
+
+Repayment amount variables display a strong but non-linear relationship with default. Customers making very small or highly variable repayments are disproportionately represented among defaulters, while higher and more consistent repayment behaviour is associated with lower risk. Repayment and billing amounts are highly right-skewed, reinforcing that normality assumptions are inappropriate. Also, class imbalance for target variable (DEFAULT) means metrics such as ROC-AUC is preferred.
+
+Demographic variables such as age, sex, education, and marital status show comparatively weak and non-monotonic relationships with default once behavioural variables are considered. Correlation analysis further confirms that repayment status and behavioural features dominate default risk, while demographic attributes contribute limited incremental information.
+
+Overall, EDA results indicate that recent delinquency, repayment stability, and credit exposure are the primary drivers of short-term default risk. These findings directly motivated the subsequent feature engineering and modelling strategy.
+
 
 
 
 ### Feature Engineering
+
 Feature engineering was guided directly by EDA findings and domain considerations. Rather than modelling raw monthly variables independently, temporal repayment information was summarised to produce more compact and interpretable behavioural indicators.
 
 Key engineered features include:
@@ -73,6 +82,7 @@ Key engineered features include:
 Automated feature selection methods such as RFECV were deliberately not applied. Instead, features were retained based on empirical evidence from EDA, domain relevance, and consistency across models. This prioritises interpretability and robustness over marginal performance gains and avoids instability caused by correlated financial variables.
 
 ### Modelling Strategy
+
 Three modelling approaches were evaluated:
 - **Logistic Regression** as an interpretable baseline  
 - **Random Forest** to capture non-linear relationships and feature interactions  
