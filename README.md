@@ -2,7 +2,8 @@
 
 ## Project Overview
 
-This project develops and compares statistical and machine-learning models to predict credit card payment default, using a real-world dataset of Taiwanese credit card customers. The objective is not only to achieve strong predictive performance, but also to identify and explain the key drivers of default risk through interpretable modelling and model-agnostic explanation techniques. This task is central to retail credit risk management, where accurately identifying high-risk customers enables better pricing, monitoring, and loss mitigation decisions.
+This project develops and compares statistical and machine-learning models to predict credit card payment default, using a real-world dataset of Taiwanese credit card customers. The objective is not only to achieve strong predictive performance, but also to identify and explain the key drivers of default risk through interpretable modelling and model-agnostic explanation techniques. Such models are commonly used in credit risk analysis and financial decision-support settings.
+
 
 
 The workflow follows a structured data science pipeline:
