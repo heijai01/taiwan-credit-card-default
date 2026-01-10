@@ -45,6 +45,7 @@ Features are grouped conceptually rather than documented individually:
 
 The project follows a structured and reproducible workflow, with each stage implemented in a dedicated notebook.
 
+
 ### Data Cleaning and Validation
 
 Raw data were inspected for structural inconsistencies, undocumented categorical values, and potential data-quality issues that could bias downstream analysis. 
@@ -56,6 +57,8 @@ The EDUCATION variable includes undocumented categorical levels (0, 5, and 6) th
 Negative billing amounts were preserved, as they reflect refunds or credit adjustments rather than data errors.
 
 All observations were retained to avoid distorting the original class distribution.
+
+---
 
 ### Exploratory Data Analysis (EDA)
 
@@ -72,6 +75,7 @@ Demographic variables such as age, sex, education, and marital status show compa
 
 Overall, EDA results indicate that **recent delinquency**, **repayment stability**, and **credit exposure** are the primary drivers of short-term default risk. These findings directly motivated the subsequent feature engineering and modelling strategy.
 
+---
 
 ### Feature Engineering
 
@@ -130,6 +134,18 @@ SMOTE was tested to assess whether synthetic oversampling improves discriminatio
 
 ![ROC Curve (Logistic vs SMOTE)](reports/figures/roc_curve.png)
 
+---
+
+### Random Forest Feature Importance
+
+Random Forest feature importance highlights which variables were most frequently used by the model to split the data:
+
+![Random Forest Feature Importance](reports/figures/rf_feature_importance.png)
+
+Repayment behaviour and delinquency history dominate model decisions. Maximum past delinquency is the most influential feature, followed by repayment-related measures such as total repayment amount, payment-to-bill ratio, utilisation, and payment variability. Demographic variables contribute minimally once behavioural and financial features are included. Due to correlations among financial variables, importance values are interpreted qualitatively rather than as precise rankings.
+
+---
+
 ### Performance Comparison (Test ROC–AUC)
 
 | Model | ROC–AUC |
@@ -146,14 +162,7 @@ Tree-based models substantially outperform the linear baseline, suggesting meani
 Interpretability was addressed at multiple levels to ensure transparency and consistency of insights across modelling approaches.
 Among the evaluated models, XGBoost achieved the highest ROC–AUC and was therefore selected for detailed model interpretation using SHAP.
 
-
-### Random Forest Feature Importance
-
-Random Forest feature importance highlights which variables were most frequently used by the model to split the data:
-
-![Random Forest Feature Importance](reports/figures/rf_feature_importance.png)
-
-Repayment behaviour and delinquency history dominate model decisions. Maximum past delinquency is the most influential feature, followed by repayment-related measures such as total repayment amount, payment-to-bill ratio, utilisation, and payment variability. Demographic variables contribute minimally once behavioural and financial features are included. Due to correlations among financial variables, importance values are interpreted qualitatively rather than as precise rankings.
+---
 
 ### XGBoost model hyperparameters
 
